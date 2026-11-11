@@ -200,6 +200,10 @@ body {
 :lang(fa) .block strong { margin-right: 0; margin-left: .3em; font-weight: 600; }
 :lang(fa) .block p { font-size: calc(var(--u) * 17.5); }
 :lang(fa) dialog { font-size: 14px; line-height: 1.8; }
+/* top bar mirrored for right-to-left: title on the right, flag pill on the far left */
+[dir=rtl] .mark { left: auto; right: 24px; }
+[dir=rtl] .tools { right: auto; left: 24px; flex-direction: row-reverse; }
+[dir=rtl] .lang-menu { right: auto; left: 0; }
 
 /* ---------- sources dialog ---------- */
 dialog {
@@ -248,6 +252,8 @@ dialog button {
 @media (max-width: 640px) {
   .mark { left: 16px; top: 10px; }
   .tools { right: 16px; top: 10px; }
+  [dir=rtl] .mark { right: 16px; }
+  [dir=rtl] .tools { left: 16px; }
   .comp { --u: min(100cqw / 480, (100cqh - 44px) / 770, 1.3px); margin-top: 44px; }
   .sig { height: auto; grid-template-columns: 1fr; justify-items: center; gap: 8px; padding: 14px 16px max(14px, env(safe-area-inset-bottom)); }
   .sig .start, .sig .mid, .sig .end { justify-self: center; }
