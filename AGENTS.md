@@ -15,7 +15,8 @@ Project summary lives in: `~/Desktop/AI/ai-os/10_context/projects/iran-map-timel
   - `public/map.json` is generated and packed small: `npm run data` (tools/build-data.mjs) downloads the border files and rebuilds it. Never edit it by hand.
   - Keep it light: first load is about 100 KB compressed (page 2, CSS 3, JS 10, font 25, map 60). Do not add three.js or other libraries for the globe.
 - How to run it: `npm install`, then `npm run dev` (starts a local server and prints its address).
-- How to deploy it: static site — `npm run build` makes `dist/`; host on Vercel (`vercel.json` sets cache headers). Not deployed yet.
+- How to deploy it: static site — `npm run build` makes `dist/`; host on Vercel (`vercel.json` sets cache headers). Live at https://iran-map-timelaps.vercel.app. Deploy with `vercel --prod` from this folder (GitHub is not connected to Vercel, so a push alone does not deploy). Repo: github.com/HamzehGhoreyshi/iran-map-timelaps, branch `main`.
+- Videos: `tools/record.mjs` films the timelapse frame by frame (60 fps, no top bar or footer). After a visible design change, re-record the social videos (`exports/`, not in git), `docs/persia-through-time.gif` and `public/og-image.jpg`.
 - Rules specific to this project:
   - Portfolio link: the published page must show a visible link to `https://hamzeh.framer.ai/?utm_source=iran-map-timelaps&utm_medium=referral`. Check it is there before every deploy.
   - Every stop is a snapshot of one real year in the border data. Do not invent borders; if the data has no shape for a state, leave the stop out or use a marker (as for 844 BC).
