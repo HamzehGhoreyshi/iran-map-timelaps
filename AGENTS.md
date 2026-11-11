@@ -9,7 +9,7 @@ If you cannot reach that path, ask Hamzeh to also connect the `ai-os` folder.
 Project summary lives in: `~/Desktop/AI/ai-os/10_context/projects/iran-map-timelaps.md`
 
 ## This project
-- What it is: Experiment — "Persia through time". A minimal white 3D globe that shows how the map of Persia/Iran changed from 844 BC to today. A tick ruler scrubs through 15 stops; the globe spins with motion blur between them. English (Manrope) by default, Persian (Ravi) at `?lang=fa`.
+- What it is: Experiment — "Persia through time". A minimal white 3D globe that shows how the map of Persia/Iran changed from 844 BC to today. A tick ruler scrubs through 15 stops; the globe spins with motion blur between them. Persian (Ravi) by default, English (Manrope) at `?lang=en`.
 - Tech stack: Vite · vanilla JS · plain WebGL 2 (one sphere, one shader, map painted on 2D canvases) · no framework, no 3D library, one dependency (Manrope font).
   - `src/eras.js` stops and captions (EN/FA) · `src/labels.js` country names · `src/i18n.js` interface text · `src/globe.js` globe · `src/mapdata.js` loads the border file · `src/ruler.js` timeline · `src/main.js` wiring.
   - `public/map.json` is generated and packed small: `npm run data` (tools/build-data.mjs) downloads the border files and rebuilds it. Never edit it by hand.

@@ -14,8 +14,8 @@ const caption = document.querySelector('.caption');
 const rulerEl = document.querySelector('.ruler');
 const ends = rulerEl.querySelectorAll('.ends span');
 
-// English unless the address says ?lang=fa, so a Persian link can be shared.
-let lang = new URLSearchParams(location.search).get('lang') === 'fa' ? 'fa' : 'en';
+// Persian unless the address says ?lang=en, so an English link can be shared.
+let lang = new URLSearchParams(location.search).get('lang') === 'en' ? 'en' : 'fa';
 // Opens on "Today", like the reference. ?stop=<id> opens another stop (used for the share image).
 const asked = ERAS.findIndex((era) => era.id === new URLSearchParams(location.search).get('stop'));
 let current = asked === -1 ? last : asked;
@@ -66,7 +66,7 @@ function applyLang(next) {
   setCaption(1);
 
   const url = new URL(location.href);
-  if (lang === 'en') url.searchParams.delete('lang');
+  if (lang === 'fa') url.searchParams.delete('lang');
   else url.searchParams.set('lang', lang);
   history.replaceState(null, '', url);
   if (globe) mapFont(lang).then(() => globe.setLang(lang));

@@ -81,7 +81,7 @@ await page.evaluateOnNewDocument(() => {
   };
 });
 
-await page.goto(`${origin}/?stop=parsua${lang === 'fa' ? '&lang=fa' : ''}`, { waitUntil: 'networkidle0' });
+await page.goto(`${origin}/?stop=parsua&lang=${lang}`, { waitUntil: 'networkidle0' });
 // Only the piece itself: no top bar, no footer.
 await page.addStyleTag({ content: '.mark, .tools, .sig { display: none !important; }' });
 
