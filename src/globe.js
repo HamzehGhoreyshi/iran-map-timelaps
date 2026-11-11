@@ -27,7 +27,7 @@ const LAND = '#eeeeec';
 const COAST = 'rgba(60, 60, 66, 0.23)';
 const BORDER = 'rgba(60, 60, 66, 0.16)';
 const INK = 'rgba(60, 60, 66, 0.55)';
-const OVERLAY = 0.32; // how solid Persia's fill is: light, so the countries underneath stay readable
+const OVERLAY = 0.6; // how solid Persia's fill is: the countries underneath stay readable
 const MAX_LABELS = 12;
 const HOME = [53, 33]; // Iran: names closer to it win when space is short
 const FONTS = { en: "'Manrope Variable', Manrope, sans-serif", fa: 'Ravi, Vazirmatn, sans-serif' };
@@ -173,9 +173,11 @@ function paintLabels(ctx, to, countries, lang) {
   const wanted = countries
     .filter((country) => country.label && LABELS[country.name])
     .map((country) => {
-      const { lon, lat, room } = country.label;
+      const { at, [lang]: text } = LABELS[country.name];
+      const [lon, lat] = at || [country.label.lon, country.label.lat];
+      const { room } = country.label;
       const away = Math.hypot(lon - HOME[0], lat - HOME[1]);
-      return { ...country.label, text: LABELS[country.name][lang], score: room * Math.exp(-away / 45) };
+      return { lon, lat, room, text, score: room * Math.exp(-away / 45) };
     })
     .sort((a, b) => b.score - a.score);
 

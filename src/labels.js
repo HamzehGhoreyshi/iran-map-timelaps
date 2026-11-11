@@ -1,8 +1,9 @@
 // Names printed on the map. Only the countries listed here get a name, so the map
 // never gets crowded. The key is the country's name in the border data; `en` and `fa`
-// are what is printed.
+// are what is printed. `at: [lon, lat]` overrides the computed spot (the roomiest point),
+// for a name that should sit in the visual middle of its country instead.
 export const LABELS = {
-  Iran: { en: 'Iran', fa: 'ایران' },
+  Iran: { en: 'Iran', fa: 'ایران', at: [53.8, 32.6] },
   Iraq: { en: 'Iraq', fa: 'عراق' },
   Turkey: { en: 'Turkey', fa: 'ترکیه' },
   Syria: { en: 'Syria', fa: 'سوریه' },
