@@ -1,0 +1,252 @@
+/* Layout idea: one centred column (globe, caption, ruler) that scales as a whole.
+   Every size in the column is a multiple of --u, a unit worked out from the free
+   space, so the composition keeps its proportions on any screen. */
+/* Ravi (Persian) is served from my separate font site so the font files stay out of this repo. */
+@font-face { font-family: "Ravi"; font-weight: 400; font-display: swap; src: url("https://word-capsule-fonts.vercel.app/Ravi-Regular.woff2") format("woff2"); }
+@font-face { font-family: "Ravi"; font-weight: 500; font-display: swap; src: url("https://word-capsule-fonts.vercel.app/Ravi-Medium.woff2") format("woff2"); }
+@font-face { font-family: "Ravi"; font-weight: 600; font-display: swap; src: url("https://word-capsule-fonts.vercel.app/Ravi-SemiBold.woff2") format("woff2"); }
+@font-face { font-family: "Ravi"; font-weight: 700; font-display: swap; src: url("https://word-capsule-fonts.vercel.app/Ravi-Bold.woff2") format("woff2"); }
+
+:root {
+  --en: 'Manrope Variable', Manrope, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --fa: 'Ravi', 'Vazirmatn', 'Manrope Variable', system-ui, sans-serif;
+  --ink: #111113;
+  --muted: #8e8e93;
+  --tick: #dcdce0;
+  --page: #fdfdfd;
+  color-scheme: light;
+}
+
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  margin: 0;
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  background: var(--page);
+  color: var(--ink);
+  font-family: var(--en);
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;
+}
+
+.stage {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  place-items: center;
+  container-type: size;
+}
+
+/* top bar: name on the left, sources + language on the right (same side in both languages) */
+.mark, .tools { position: absolute; top: 16px; margin: 0; direction: ltr; }
+.mark { left: 24px; font-size: 12.5px; line-height: 36px; font-weight: 600; color: #3a3a40; }
+.tools { right: 24px; display: flex; align-items: center; gap: 14px; }
+.sources {
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-size: 12.5px;
+  line-height: 36px;
+  color: var(--muted);
+  cursor: pointer;
+  transition: color .2s;
+}
+.sources:hover { color: var(--ink); }
+
+/* language switch: the flag pill from Word & Capsule */
+.lang { position: relative; flex: none; }
+.lang-btn {
+  height: 36px; display: flex; align-items: center; justify-content: center; gap: 5px; padding: 0 10px;
+  border: 1.5px solid #e3e3ea; border-radius: 999px; background: #fff; cursor: pointer; transition: border-color .2s, box-shadow .2s;
+}
+.lang-btn:hover { border-color: #c9c9d2; box-shadow: 0 4px 12px -8px rgba(0, 0, 0, .35); }
+.lang-btn .chev { display: block; width: 14px; height: 14px; margin-right: -3.5px; transition: transform .3s cubic-bezier(.2, .8, .2, 1); }
+.lang.open .lang-btn .chev { transform: rotate(180deg); }
+.flag { width: 21px; height: 15px; flex: none; display: block; }
+.flag svg { width: 100%; height: 100%; display: block; border-radius: 3px; box-shadow: 0 0 0 1px rgba(0, 0, 0, .08); }
+.lang-menu {
+  position: absolute; top: 44px; right: 0; width: 172px; z-index: 30; background: #fff; border-radius: 13px; padding: 6px;
+  box-shadow: 0 18px 40px -12px rgba(0, 0, 0, .25), 0 0 0 1px rgba(0, 0, 0, .05);
+  opacity: 0; transform: translateY(-6px) scale(.98); pointer-events: none; transform-origin: top; visibility: hidden;
+  transition: opacity .22s ease, transform .32s cubic-bezier(.2, .8, .2, 1), visibility 0s .32s;
+}
+.lang.open .lang-menu { opacity: 1; transform: none; pointer-events: auto; visibility: visible; transition-delay: 0s; }
+.lang-item {
+  width: 100%; display: flex; align-items: center; gap: 10px; padding: 10px; border: 0; background: transparent;
+  border-radius: 9px; font: inherit; font-size: 14px; font-weight: 600; color: var(--ink); cursor: pointer; text-align: left;
+}
+.lang-item[lang="fa"] { font-family: var(--fa); }
+.lang-item:hover { background: #f3f3f6; }
+.lang-item.on { background: #f0f0f3; }
+.lang-item.on::after { content: "✓"; margin-left: auto; font-size: 13px; }
+
+/* ---------- the composition ---------- */
+.comp {
+  --u: min(100cqw / 480, 100cqh / 800, 1.3px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: calc(var(--u) * 460);
+}
+
+.globe {
+  position: relative;
+  width: calc(var(--u) * 424);
+  height: calc(var(--u) * 424);
+}
+.globe canvas { display: block; width: 100%; height: 100%; opacity: 0; transition: opacity .6s; }
+.globe.ready canvas { opacity: 1; }
+.shadow {
+  position: absolute;
+  left: 50%;
+  top: calc(100% + var(--u) * 14);
+  width: calc(var(--u) * 400);
+  height: calc(var(--u) * 34);
+  transform: translateX(-50%);
+  background: radial-gradient(closest-side, rgba(20, 20, 30, .26), rgba(20, 20, 30, .08) 55%, transparent);
+  filter: blur(calc(var(--u) * 5));
+}
+
+.caption {
+  position: relative;
+  width: 100%;
+  height: calc(var(--u) * 62);
+  margin-top: calc(var(--u) * 78);
+  text-align: center;
+}
+.block { position: absolute; inset: 0; }
+.block h1 {
+  margin: 0;
+  font-size: calc(var(--u) * 24);
+  line-height: calc(var(--u) * 30);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+.block p {
+  margin: calc(var(--u) * 8) 0 0;
+  font-size: calc(var(--u) * 16.5);
+  line-height: calc(var(--u) * 22);
+  color: var(--muted);
+  white-space: nowrap;
+}
+.block strong { margin-right: .3em; font-weight: 650; color: var(--ink); }
+/* the old text leaves quickly, the new one waits for it: the two are never readable together */
+.block.in { animation: caption-in .45s cubic-bezier(.2, .7, .2, 1) .12s both; }
+.block.out { animation: caption-out .17s ease-in both; }
+@keyframes caption-in {
+  from { opacity: 0; filter: blur(calc(var(--u) * 7)); transform: translateY(calc(var(--u) * 9 * var(--dir, 1))); }
+}
+@keyframes caption-out {
+  to { opacity: 0; filter: blur(calc(var(--u) * 7)); transform: translateY(calc(var(--u) * -9 * var(--dir, 1))); }
+}
+
+.ruler {
+  width: calc(var(--u) * 448);
+  margin-top: calc(var(--u) * 26);
+  padding: calc(var(--u) * 14) 0 calc(var(--u) * 10);
+  direction: ltr; /* the side today sits on is set per language with .reversed, not by text direction */
+  cursor: default;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  outline: none;
+  border-radius: 8px;
+}
+.ruler:focus-visible { outline: 2px solid #2f6feb; outline-offset: 6px; }
+.ticks {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  height: calc(var(--u) * 48);
+}
+.ticks i {
+  --grow: 0;
+  width: max(1px, calc(var(--u) * 1.5));
+  height: calc(var(--u) * (13 + 30 * var(--grow)));
+  /* ticks near the pointer grow and darken only a little, so the chosen one clearly leads */
+  background: color-mix(in srgb, #a2a2a8 calc(var(--grow) * 100%), var(--tick));
+  border-radius: 1px;
+}
+.ticks i.stop { height: calc(var(--u) * (17 + 28 * var(--grow))); background: color-mix(in srgb, #a2a2a8 calc(var(--grow) * 100%), #c6c6cb); }
+.ticks i.on { width: max(2.5px, calc(var(--u) * 2.6)); height: calc(var(--u) * 48); background: #000; border-radius: 2px; transition: height .2s; }
+.ends {
+  display: flex;
+  justify-content: space-between;
+  margin-top: calc(var(--u) * 16);
+  font-size: calc(var(--u) * 14.5);
+  line-height: calc(var(--u) * 20);
+  color: var(--muted);
+}
+.ruler.reversed .ticks, .ruler.reversed .ends { flex-direction: row-reverse; }
+.ends span { transition: color .25s; unicode-bidi: plaintext; }
+.ends .on { color: var(--ink); font-weight: 600; }
+
+/* ---------- Persian: Ravi, right-to-left, never letter-spaced ---------- */
+:lang(fa) .mark, :lang(fa) .sources, :lang(fa) .comp, :lang(fa) dialog { font-family: var(--fa); }
+:lang(fa) .mark, :lang(fa) .sources { font-size: 13.5px; }
+:lang(fa) .block h1 { letter-spacing: 0; font-weight: 700; }
+:lang(fa) .block strong { margin-right: 0; margin-left: .3em; font-weight: 600; }
+:lang(fa) .block p { font-size: calc(var(--u) * 17.5); }
+:lang(fa) dialog { font-size: 14px; line-height: 1.8; }
+
+/* ---------- sources dialog ---------- */
+dialog {
+  width: min(420px, calc(100vw - 32px));
+  padding: 24px;
+  border: 0;
+  border-radius: 20px;
+  background: #fff;
+  color: var(--ink);
+  box-shadow: 0 24px 80px rgba(20, 20, 30, .22);
+  font-size: 13px;
+  line-height: 1.55;
+}
+dialog::backdrop { background: rgba(20, 20, 30, .25); backdrop-filter: blur(6px); }
+dialog h2 { margin: 0 0 8px; font-size: 16px; font-weight: 650; }
+dialog p { margin: 0 0 12px; color: #5c5c63; }
+dialog ul { margin: 0 0 20px; padding: 0; list-style: none; display: grid; gap: 10px; color: #5c5c63; }
+dialog li span { display: block; }
+dialog li strong { display: block; color: var(--ink); font-weight: 600; }
+dialog a { color: inherit; text-underline-offset: 2px; }
+dialog button {
+  height: 36px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: 10px;
+  background: var(--ink);
+  color: #fff;
+  font: inherit;
+  font-weight: 550;
+  cursor: pointer;
+}
+
+/* ---------- signature footer: same pattern as my other projects ---------- */
+.sig { flex: none; width: 100%; height: 56px; padding: 0 60px; background: #fff; border-top: 1px solid rgba(28, 26, 23, .08);
+  display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 10px; white-space: nowrap; font-size: 12px; line-height: 1; color: #8a857c; }
+.sig a { display: inline-flex; align-items: center; gap: 6px; height: 20px; color: inherit; text-decoration: none; border-radius: 6px; transition: opacity .2s; }
+.sig a:hover { opacity: .7; }
+.sig strong { color: #3a3a40; font-weight: 600; }
+.sig svg { display: block; flex: none; width: 13px; height: 13px; fill: #3a3a40; }
+.sig .star-icon { fill: #f5a03a; }
+.sig .start { justify-self: start; }
+.sig .mid { justify-self: center; display: inline-flex; align-items: center; height: 20px; }
+.sig .end { justify-self: end; display: inline-flex; align-items: center; gap: 10px; height: 20px; }
+.sig .dot { opacity: .5; }
+
+@media (max-width: 640px) {
+  .mark { left: 16px; top: 10px; }
+  .tools { right: 16px; top: 10px; }
+  .comp { --u: min(100cqw / 480, (100cqh - 44px) / 770, 1.3px); margin-top: 44px; }
+  .sig { height: auto; grid-template-columns: 1fr; justify-items: center; gap: 8px; padding: 14px 16px max(14px, env(safe-area-inset-bottom)); }
+  .sig .start, .sig .mid, .sig .end { justify-self: center; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .block.in, .block.out { animation: none; }
+  .ticks i.on, .ruler.reversed .ticks, .ruler.reversed .ends { flex-direction: row-reverse; }
+.ends span { transition: none; }
+}
