@@ -1,6 +1,14 @@
 /* Layout idea: one centred column (globe, caption, ruler) that scales as a whole.
    Every size in the column is a multiple of --u, a unit worked out from the free
    space, so the composition keeps its proportions on any screen. */
+/* Manrope (English): only the Latin part of the font is shipped, and index.html preloads it. */
+@font-face {
+  font-family: 'Manrope Variable';
+  font-style: normal;
+  font-weight: 200 800;
+  font-display: swap;
+  src: url('@fontsource-variable/manrope/files/manrope-latin-wght-normal.woff2') format('woff2-variations');
+}
 /* Ravi (Persian) is served from my separate font site so the font files stay out of this repo. */
 @font-face { font-family: "Ravi"; font-weight: 400; font-display: swap; src: url("https://word-capsule-fonts.vercel.app/Ravi-Regular.woff2") format("woff2"); }
 @font-face { font-family: "Ravi"; font-weight: 500; font-display: swap; src: url("https://word-capsule-fonts.vercel.app/Ravi-Medium.woff2") format("woff2"); }

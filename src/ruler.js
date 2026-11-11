@@ -37,11 +37,13 @@ export function createRuler(root, { count, onChange, initial }) {
     active = next;
     ticks[active * STEP].classList.add('on');
     root.setAttribute('aria-valuenow', String(active));
+    wake();
     onChange(active);
   }
 
   function onPointer(event) {
     pointer = toTick(event.clientX);
+    wake();
     select(Math.round(pointer / STEP));
   }
   root.addEventListener('pointermove', (event) => {
@@ -51,7 +53,7 @@ export function createRuler(root, { count, onChange, initial }) {
     root.setPointerCapture(event.pointerId);
     onPointer(event);
   });
-  const release = () => { pointer = null; };
+  const release = () => { pointer = null; wake(); };
   root.addEventListener('pointerleave', release);
   root.addEventListener('pointerup', (event) => { if (event.pointerType !== 'mouse') release(); });
   root.addEventListener('pointercancel', release);
@@ -66,22 +68,34 @@ export function createRuler(root, { count, onChange, initial }) {
     event.preventDefault();
   });
 
+  // The magnified zone glides after the pointer. The loop only runs while it is
+  // moving, so an idle page does no work here.
+  let running = false;
+  function wake() {
+    if (running) return;
+    running = true;
+    last = performance.now();
+    requestAnimationFrame(frame);
+  }
   function frame(now) {
     const dt = Math.min((now - last) / 1000, 0.05);
     last = now;
     const target = pointer ?? active * STEP;
     focus += (target - focus) * (1 - Math.exp(-FOLLOW * dt));
+    const settled = Math.abs(target - focus) < 0.002;
+    if (settled) focus = target;
     for (let i = 0; i < total; i++) {
       const d = (i - focus) / REACH;
       ticks[i].style.setProperty('--grow', Math.exp(-d * d).toFixed(3));
     }
-    requestAnimationFrame(frame);
+    running = !settled;
+    if (running) requestAnimationFrame(frame);
   }
 
   ticks[active * STEP].classList.add('on');
   root.setAttribute('aria-valuemax', String(count - 1));
   root.setAttribute('aria-valuenow', String(active));
-  requestAnimationFrame(frame);
+  wake();
 
   return { select, get active() { return active; } };
 }

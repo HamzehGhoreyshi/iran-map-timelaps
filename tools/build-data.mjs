@@ -4,7 +4,7 @@
 // tools/source-data/ (once) and saves three things:
 //   - eras:      the outline(s) of Persia in each year
 //   - countries: today's countries near Persia (the map that shows underneath)
-//   - land:      the shape of all land
+//   - world:     all land, coarse (only seen while the globe spins)
 import { readFile, writeFile, mkdir, access } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
@@ -17,7 +17,7 @@ const OUT = path.join(here, '..', 'public', 'map.json');
 const BASE = 'https://raw.githubusercontent.com/aourednik/historical-basemaps/master/geojson';
 
 const DETAIL = 0.035; // degrees: points closer to a straight line than this are dropped
-const LAND_DETAIL = 0.06;
+const WORLD_DETAIL = 0.15;
 const MIN_RING_AREA = 0.03; // square degrees: drops specks that are invisible on the globe
 const round = (n) => Math.round(n * 100) / 100;
 
@@ -81,11 +81,11 @@ const inWindow = ([minX, minY, maxX, maxY]) =>
   maxX > WINDOW.lon0 && minX < WINDOW.lon1 && maxY > WINDOW.lat0 && minY < WINDOW.lat1;
 
 // Turns one GeoJSON feature into a list of polygons (each a list of rings).
-function polygonsOf(feature, { tolerance, windowOnly }) {
+function polygonsOf(feature, { tolerance, windowOnly, minArea = MIN_RING_AREA }) {
   const polys = feature.geometry.type === 'MultiPolygon' ? feature.geometry.coordinates : [feature.geometry.coordinates];
   const out = [];
   for (const poly of polys) {
-    if (ringArea(poly[0]) < MIN_RING_AREA) continue;
+    if (ringArea(poly[0]) < minArea) continue;
     if (windowOnly && !inWindow(bbox(poly[0]))) continue;
     const rings = poly
       .filter((ring, i) => i === 0 || ringArea(ring) >= MIN_RING_AREA)
@@ -140,9 +140,25 @@ function labelSpot(polygons) {
   return spot;
 }
 
+// Packs rings small: whole numbers in hundredths of a degree, each point stored as the
+// step from the previous one ([x0, y0, dx, dy, dx, dy, ...]). src/mapdata.js unpacks it.
+function pack(polygons) {
+  return polygons.flat().map((ring) => {
+    const points = ring.slice(0, -1); // the last point repeats the first
+    const out = [];
+    let px = 0, py = 0;
+    for (const [x, y] of points) {
+      const ix = Math.round(x * 100), iy = Math.round(y * 100);
+      out.push(ix - px, iy - py);
+      px = ix; py = iy;
+    }
+    return out;
+  });
+}
+
 const eras = {};
 for (const era of ERAS) {
-  if (!era.names) { eras[era.id] = { bbox: null, persia: [] }; continue; }
+  if (!era.names) { eras[era.id] = { bbox: null, rings: [] }; continue; }
   const world = await loadWorld(era.file);
   const persia = [];
   for (const feature of world.features) {
@@ -159,27 +175,29 @@ for (const era of ERAS) {
     Math.min(...boxes.map((b) => b[0])), Math.min(...boxes.map((b) => b[1])),
     Math.max(...boxes.map((b) => b[2])), Math.max(...boxes.map((b) => b[3])),
   ];
-  eras[era.id] = { bbox: box, persia };
+  eras[era.id] = { bbox: box, rings: pack(persia) };
   console.log(era.id.padEnd(12), `${persia.length} piece(s)`);
 }
 
-// Today's world: the shape of all land, and today's countries near Persia.
-// The countries are the map that stays visible underneath Persia in every year.
+// Today's world, twice:
+//   - world: all land, coarse. Only seen small or blurred, mid-spin.
+//   - countries: today's countries near Persia, detailed. This is the map that stays
+//     visible underneath Persia in every year. `label` is where its name goes.
 const modern = await loadWorld('2010');
-const land = [];
+const world = [];
 const countries = [];
 for (const feature of modern.features) {
   if (!feature.geometry) continue;
-  land.push(...polygonsOf(feature, { tolerance: LAND_DETAIL }));
-  const name = feature.properties.NAME;
+  world.push(...polygonsOf(feature, { tolerance: WORLD_DETAIL, minArea: 0.4 }));
   const polygons = polygonsOf(feature, { tolerance: DETAIL, windowOnly: true });
-  if (!name || !polygons.length) continue;
-  const spot = labelSpot(polygons);
-  countries.push({ name, polygons, ...(spot && spot.room >= 0.9 ? { label: spot } : {}) });
+  if (!polygons.length) continue;
+  const name = feature.properties.NAME || '';
+  const spot = name ? labelSpot(polygons) : null;
+  countries.push({ name, rings: pack(polygons), ...(spot && spot.room >= 0.9 ? { label: [spot.lon, spot.lat, spot.room] } : {}) });
 }
 console.log(`${countries.length} modern countries`);
 
 await mkdir(path.dirname(OUT), { recursive: true });
-const json = JSON.stringify({ land, countries, eras });
+const json = JSON.stringify({ world: pack(world), countries, eras });
 await writeFile(OUT, json);
 console.log('Saved', path.relative(process.cwd(), OUT), `${Math.round(json.length / 1024)} KB`);

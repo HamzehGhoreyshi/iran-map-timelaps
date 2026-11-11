@@ -10,9 +10,10 @@ Project summary lives in: `~/Desktop/AI/ai-os/10_context/projects/iran-map-timel
 
 ## This project
 - What it is: Experiment — "Persia through time". A minimal white 3D globe that shows how the map of Persia/Iran changed from 844 BC to today. A tick ruler scrubs through 15 stops; the globe spins with motion blur between them. English (Manrope) by default, Persian (Ravi) at `?lang=fa`.
-- Tech stack: Vite · vanilla JS · three.js (one sphere, custom shader, map painted on 2D canvases) · no framework.
-  - `src/eras.js` stops and captions (EN/FA) · `src/labels.js` neighbour names · `src/i18n.js` interface text · `src/globe.js` globe · `src/ruler.js` timeline · `src/main.js` wiring.
-  - `public/map.json` is generated: `npm run data` (tools/build-data.mjs) downloads the border files and rebuilds it. Never edit it by hand.
+- Tech stack: Vite · vanilla JS · plain WebGL 2 (one sphere, one shader, map painted on 2D canvases) · no framework, no 3D library, one dependency (Manrope font).
+  - `src/eras.js` stops and captions (EN/FA) · `src/labels.js` country names · `src/i18n.js` interface text · `src/globe.js` globe · `src/mapdata.js` loads the border file · `src/ruler.js` timeline · `src/main.js` wiring.
+  - `public/map.json` is generated and packed small: `npm run data` (tools/build-data.mjs) downloads the border files and rebuilds it. Never edit it by hand.
+  - Keep it light: first load is about 100 KB compressed (page 2, CSS 3, JS 10, font 25, map 60). Do not add three.js or other libraries for the globe.
 - How to run it: `npm install`, then `npm run dev` (starts a local server and prints its address).
 - How to deploy it: static site — `npm run build` makes `dist/`; host on Vercel (`vercel.json` sets cache headers). Not deployed yet.
 - Rules specific to this project:

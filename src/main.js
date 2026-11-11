@@ -1,9 +1,9 @@
 // Wires the parts together: the globe, the caption, the timeline ruler and the language switch.
-import '@fontsource-variable/manrope';
 import './style.css';
 import { ERAS, HIGHLIGHT } from './eras.js';
 import { LANGS, FLAGS } from './i18n.js';
 import { createGlobe } from './globe.js';
+import { loadMap } from './mapdata.js';
 import { createRuler } from './ruler.js';
 
 const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -69,7 +69,7 @@ function applyLang(next) {
   if (lang === 'en') url.searchParams.delete('lang');
   else url.searchParams.set('lang', lang);
   history.replaceState(null, '', url);
-  globe?.setLang(lang);
+  if (globe) mapFont(lang).then(() => globe.setLang(lang));
 }
 
 // ---- language switch (flag pill) ----
@@ -99,7 +99,7 @@ applyLang(lang);
 // ---- globe and ruler ----
 async function start() {
   // The border data is a separate file so the page itself stays small.
-  const map = await fetch('/map.json').then((response) => response.json());
+  const map = await loadMap('/map.json');
   globe = createGlobe(document.querySelector('.globe canvas'), { eras: ERAS, map, reducedMotion, lang, highlight: HIGHLIGHT });
   globe.show(current);
   document.querySelector('.globe').classList.add('ready');
@@ -116,10 +116,14 @@ async function start() {
   });
 
   // Names on the map are drawn as pictures, so redraw them once the real fonts have arrived.
-  await Promise.all([
-    document.fonts.load("700 20px 'Manrope Variable'", 'A'),
-    document.fonts.load('600 20px Ravi', 'ایران'),
-  ]).catch(() => {});
+  await mapFont(lang);
   globe.setLang(lang);
+}
+
+// Waits for the font the map names use in this language. The Persian font is only
+// downloaded when Persian is actually shown.
+function mapFont(language) {
+  const wanted = language === 'fa' ? ['600 20px Ravi', 'ایران'] : ["700 20px 'Manrope Variable'", 'A'];
+  return document.fonts.load(...wanted).catch(() => {});
 }
 start();

@@ -3,7 +3,7 @@
 A small interactive globe that shows how the map of Persia (Iran) changed over 2,800 years, from the first written record of the Persians in 844 BC to Iran today. Move over the ruler, drag it, or use the arrow keys.
 
 - English by default, Persian at `?lang=fa`.
-- Built with Vite, vanilla JavaScript and three.js.
+- Built with Vite, vanilla JavaScript and plain WebGL 2. No framework or 3D library; the first load is about 100 KB.
 
 ## Run
 
