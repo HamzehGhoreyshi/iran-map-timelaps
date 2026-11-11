@@ -244,6 +244,7 @@ dialog button {
 .sig strong { color: #3a3a40; font-weight: 600; }
 .sig svg { display: block; flex: none; width: 13px; height: 13px; fill: #3a3a40; }
 .sig .star-icon { fill: #f5a03a; }
+.sig .star-count { padding-left: 6px; border-left: 1px solid rgba(28, 26, 23, .15); color: #3a3a40; font-weight: 600; font-variant-numeric: tabular-nums; }
 .sig .start { justify-self: start; }
 .sig .mid { justify-self: center; display: inline-flex; align-items: center; height: 20px; }
 .sig .end { justify-self: end; display: inline-flex; align-items: center; gap: 10px; height: 20px; }

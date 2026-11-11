@@ -127,3 +127,18 @@ function mapFont(language) {
   return document.fonts.load(...wanted).catch(() => {});
 }
 start();
+
+// GitHub star count in the footer. Live from the public API; hidden if it fails.
+(async () => {
+  const el = document.querySelector('.star-count');
+  if (!el) return;
+  try {
+    const res = await fetch('https://api.github.com/repos/HamzehGhoreyshi/iran-map-timelaps');
+    if (!res.ok) return;
+    const { stargazers_count: n } = await res.json();
+    if (typeof n !== 'number') return;
+    el.textContent = n.toLocaleString('en');
+    el.hidden = false;
+    el.parentElement.setAttribute('aria-label', `Star this project on GitHub (${n} stars)`);
+  } catch {}
+})();
