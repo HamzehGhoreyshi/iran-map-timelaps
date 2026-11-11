@@ -28,6 +28,7 @@ const COAST = 'rgba(60, 60, 66, 0.23)';
 const BORDER = 'rgba(60, 60, 66, 0.16)';
 const INK = 'rgba(60, 60, 66, 0.55)';
 const OVERLAY = 0.6; // how solid Persia's fill is: the countries underneath stay readable
+const OVERLAY_FOREIGN = 0.26; // lighter fill for empires that ruled Iran from outside (era.foreign)
 const MAX_LABELS = 12;
 const HOME = [53, 33]; // Iran: names closer to it win when space is short
 const FONTS = { en: "'Manrope Variable', Manrope, sans-serif", fa: 'Ravi, Vazirmatn, sans-serif' };
@@ -251,7 +252,7 @@ function paintYear({ canvas, ctx }, base, era, shape, color) {
     ctx.beginPath();
     trace(ctx, shape.rings, to);
     ctx.fillStyle = color;
-    ctx.globalAlpha = OVERLAY;
+    ctx.globalAlpha = era.foreign ? OVERLAY_FOREIGN : OVERLAY;
     ctx.fill('evenodd');
     ctx.globalAlpha = 1;
     ctx.lineJoin = 'round';
