@@ -139,14 +139,10 @@ function move(to, seconds, { bend = between(-0.12, 0.12), overshoot = 0 } = {}) 
 }
 
 const onStop = (i) => ({ x: order[i] + between(-1.2, 1.2), y: geometry.tickY + between(-2.5, 2.5) });
-// 1. The hand comes in from the side and settles below the globe, next to the start of the ruler.
-rest(0.35);
-const nearStart = { x: order[0] + (lang === 'fa' ? 26 : -26), y: geometry.ruler.top - 34 };
-move(nearStart, 1.0, { bend: lang === 'fa' ? 0.1 : -0.1, overshoot: 0.035 });
-rest(0.45);
-// 2. Onto the first stop, then one stop at a time to today, pausing to read each caption.
-move(onStop(0), 0.42, { bend: 0.05 });
-rest(1.25);
+// 1. The film opens with the hand already resting on the first stop.
+at = onStop(0);
+rest(1.0);
+// 2. One stop at a time to today, pausing to read each caption.
 for (let i = 1; i < STOPS; i++) {
   move(onStop(i), between(0.34, 0.44), { bend: between(-0.18, 0.18) });
   rest(i === STOPS - 1 ? 1.1 : between(1.22, 1.4));
