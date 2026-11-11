@@ -24,7 +24,7 @@ Project summary lives in: `~/Desktop/AI/ai-os/10_context/projects/iran-map-timel
   - Timeline side is set per language in `src/i18n.js` (`todaySide`): each language starts with BC on its reading side — English: BC left, Today right; Persian: BC right, Today left.
   - Persian text: never letter-space it. Ravi is commercial and is loaded from `word-capsule-fonts.vercel.app`; never put the font files in this repo.
   - Border data is GPL-3.0 (historical-basemaps by André Ourednik): keep the credit in the Sources dialog and README.
-  - Share image: `public/og-image.jpg` is a 1200×630 screenshot of `/?stop=achaemenid`. Meta tags assume `https://iran-map-timelaps.vercel.app` — change them if the address differs.
+  - Share image: `public/og-image.jpg` is a 1200×630 screenshot of `/?stop=achaemenid` in Persian (the default); bump `?v=` on its meta tags when it changes. Meta tags assume `https://iran-map-timelaps.vercel.app` — change them if the address differs.
 
 ## Session end (in addition to the AI OS routine)
 - Commit and push this project's changes to its own repo.
