@@ -51,8 +51,10 @@ export const ERAS = [
   },
   {
     id: 'abbasid',
-    en: { year: '800', name: 'Abbasid Caliphate', desc: 'Persia inside the caliphate' },
-    fa: { year: '۸۰۰ میلادی', name: 'خلافت عباسی', desc: 'ایران در قلمرو خلافت' },
+    en: { year: '800', name: 'Abbasid Caliphate', desc: 'Iran ruled by Arab caliphs in Baghdad' },
+    fa: { year: '۸۰۰ میلادی', name: 'خلافت عباسی', desc: 'ایران زیر فرمان خلیفه‌های عرب بغداد' },
+    // The whole caliphate is shown (about 8 million km² in this file; ~11 at its 750 peak,
+    // Taagepera 1979) — it really was larger than the Achaemenids, but it was not a Persian state.
     file: '800',
     names: ['Abbasid Caliphate'],
   },
