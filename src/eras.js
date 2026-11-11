@@ -3,8 +3,6 @@
 // state names in it are highlighted as Persia (see tools/build-data.mjs).
 // `en` and `fa` hold the caption in each language, kept short on purpose.
 // One bright colour marks Persia in every year, so only its shape changes.
-// `foreign: true` = an empire that ruled Iran from outside (capital and dynasty not Iranian):
-// drawn in a lighter fill of the same colour, so it doesn't read as a Persian empire.
 export const HIGHLIGHT = '#12c46b';
 
 export const ERAS = [
@@ -29,7 +27,6 @@ export const ERAS = [
     fa: { year: '۳۲۳ پ.م', name: 'امپراتوری اسکندر', desc: 'ایران به دست مقدونیان افتاد' },
     file: 'bc323',
     names: ['Empire of Alexander'],
-    foreign: true,
   },
   {
     id: 'seleucid',
@@ -37,7 +34,6 @@ export const ERAS = [
     fa: { year: '۳۰۰ پ.م', name: 'سلوکیان', desc: 'شاهان یونانی بر ایران' },
     file: 'bc300',
     names: ['Seleucid Kingdom'],
-    foreign: true,
   },
   {
     id: 'parthian',
@@ -61,7 +57,6 @@ export const ERAS = [
     // Taagepera 1979) — it really was larger than the Achaemenids, but it was not a Persian state.
     file: '800',
     names: ['Abbasid Caliphate'],
-    foreign: true,
   },
   {
     id: 'samanid',
