@@ -4,7 +4,7 @@
 export const LANGS = {
   en: {
     dir: 'ltr',
-    todaySide: 'left', // where "Today" sits on the timeline
+    todaySide: 'right', // where "Today" sits on the timeline: English starts with BC on the left
     native: 'English',
     title: 'Persia through time — 2,800 years of borders on one globe',
     mark: 'Persia through time',
@@ -20,7 +20,7 @@ export const LANGS = {
   },
   fa: {
     dir: 'rtl',
-    todaySide: 'right',
+    todaySide: 'left', // Persian reads right to left, so BC starts on the right
     native: 'فارسی',
     title: 'ایران در گذر زمان — ۲۸۰۰ سال مرز روی یک کره',
     mark: 'ایران در گذر زمان',

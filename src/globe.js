@@ -24,7 +24,7 @@ const DEG = Math.PI / 180;
 
 const SEA = '#fbfbfa';
 const LAND = '#eeeeec';
-const COAST = 'rgba(60, 60, 66, 0.3)';
+const COAST = 'rgba(60, 60, 66, 0.23)';
 const BORDER = 'rgba(60, 60, 66, 0.16)';
 const INK = 'rgba(60, 60, 66, 0.55)';
 const OVERLAY = 0.6; // how solid Persia's fill is: the countries underneath stay readable
@@ -223,7 +223,7 @@ function paintBase({ canvas, ctx }, countries, lang) {
   // inland border, so only the true coast keeps the stronger line.
   ctx.beginPath();
   for (const country of countries) trace(ctx, country.rings, to);
-  ctx.lineWidth = 2.8 * line;
+  ctx.lineWidth = 2.4 * line;
   ctx.strokeStyle = COAST;
   ctx.stroke();
   ctx.fillStyle = LAND;
